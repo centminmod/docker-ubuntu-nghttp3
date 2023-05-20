@@ -4,12 +4,29 @@ server {
   listen 443 quic;
   server_name domain.com;
 
+  include /usr/local/nginx/conf/ssl/domain.com/domain.com.crt.key.conf;
 ...
 
   location / {
     add_header Alt-Svc 'h3=":443"; ma=86400';
 ...
 }
+```
+
+with dual RSA + ECDSA SSL certs
+
+```
+/usr/local/nginx/conf/ssl/domain.com/domain.com.crt.key.conf
+  ssl_dhparam /usr/local/nginx/conf/ssl/domain.com/dhparam.pem;
+  ssl_certificate      /usr/local/nginx/conf/ssl/domain.com/domain.com-acme.cer;
+  ssl_certificate_key  /usr/local/nginx/conf/ssl/domain.com/domain.com-acme.key;
+
+  ssl_certificate      /usr/local/nginx/conf/ssl/domain.com/domain.com-acme-ecc.cer;
+  ssl_certificate_key  /usr/local/nginx/conf/ssl/domain.com/domain.com-acme-ecc.key;
+  
+  #ssl_trusted_certificate /usr/local/nginx/conf/ssl/domain.com/domain.com-acme.cer;
+  #ssl_trusted_certificate /usr/local/nginx/conf/ssl/domain.com/domain.com-acme-ecc.cer;
+  ssl_trusted_certificate /usr/local/nginx/conf/ssl/domain.com/domain.com-dualcert-rsa-ecc.cer;
 ```
 
 ```

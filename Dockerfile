@@ -26,7 +26,8 @@ RUN apt-get update && apt-get install -y \
     ruby-dev \
     bison \
     libelf-dev \
-    git
+    git && \
+    rm -rf /var/lib/apt/lists/*
 
 # Clone and build custom OpenSSL
 RUN git clone --depth 1 -b OpenSSL_1_1_1t+quic https://github.com/quictls/openssl && \
@@ -65,6 +66,8 @@ RUN git clone https://github.com/nghttp2/nghttp2 && \
     make -j$(nproc) && \
     make install
 
+ENV LD_LIBRARY_PATH=/usr/local/http3/nghttp2/lib/.libs:${LD_LIBRARY_PATH}
+
 # Clone and build curl with http3 support
 RUN git clone https://github.com/curl/curl && \
     cd curl && \
@@ -73,4 +76,4 @@ RUN git clone https://github.com/curl/curl && \
     make -j$(nproc) && \
     make install
 
-ENV LD_LIBRARY_PATH=/usr/local/http3/curl/lib/.libs:${LD_LIBRARY_PATH}
+ENV LD_LIBRARY_PATH=/usr/local/http3/nghttp2/lib/.libs:/usr/local/http3/curl/lib/.libs:${LD_LIBRARY_PATH}
