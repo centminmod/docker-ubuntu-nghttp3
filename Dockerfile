@@ -64,3 +64,13 @@ RUN git clone https://github.com/nghttp2/nghttp2 && \
     ./configure --with-mruby --with-neverbleed --enable-http3 --with-libbpf CC=clang-14 CXX=clang++-14 PKG_CONFIG_PATH="$PWD/../openssl/build/lib/pkgconfig:$PWD/../nghttp3/build/lib/pkgconfig:$PWD/../ngtcp2/build/lib/pkgconfig:$PWD/../libbpf/build/lib64/pkgconfig" LDFLAGS="$LDFLAGS -Wl,-rpath,$PWD/../openssl/build/lib -Wl,-rpath,$PWD/../libbpf/build/lib64" && \
     make -j$(nproc) && \
     make install
+
+# Clone and build curl with http3 support
+RUN git clone https://github.com/curl/curl && \
+    cd curl && \
+    autoreconf -fi && \
+    LDFLAGS="-Wl,-rpath,$PWD/../openssl/build/lib" ./configure --with-openssl=$PWD/../openssl/build --with-nghttp3=$PWD/../nghttp3/build --with-ngtcp2=$PWD/../ngtcp2/build && \
+    make -j$(nproc) && \
+    make install
+
+ENV LD_LIBRARY_PATH=/usr/local/http3/curl/lib/.libs:${LD_LIBRARY_PATH}

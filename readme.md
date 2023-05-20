@@ -8,6 +8,19 @@ h2load nghttp2/1.54.0-DEV
 docker run --rm -it nghttp3 nghttp --version
 nghttp nghttp2/1.54.0-DEV
 ```
+
+curl 8.1.1 with HTTP/3 support
+
+```
+docker run -it --name my-nghttp2 nghttp3 bash
+
+curl -V
+curl 8.1.1-DEV (x86_64-pc-linux-gnu) libcurl/8.1.1-DEV OpenSSL/1.1.1t zlib/1.2.11 nghttp2/1.43.0 ngtcp2/0.15.0 nghttp3/0.11.0
+Release-Date: [unreleased]
+Protocols: dict file ftp ftps gopher gophers http https imap imaps mqtt pop3 pop3s rtsp smb smbs smtp smtps telnet tftp
+Features: alt-svc AsynchDNS HSTS HTTP2 HTTP3 HTTPS-proxy IPv6 Largefile libz NTLM NTLM_WB SSL threadsafe TLS-SRP UnixSockets
+```
+
 ```
 docker run --rm -it nghttp3 h2load --help
 Usage: h2load [OPTIONS]... [URI]...

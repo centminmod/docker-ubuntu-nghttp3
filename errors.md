@@ -99,6 +99,26 @@ ngtcp2_conn_read_pkt: ERR_DRAINING
 ngtcp2_conn_read_pkt: ERR_DRAINING
 ```
 
+```
+curl --http3 -Iv https://domain.com/
+*   Trying 1.2.3.4:443...
+*  CAfile: /etc/ssl/certs/ca-certificates.crt
+*  CApath: none
+*  subjectAltName: host "domain.com" matched cert's "domain.com"
+* Verified certificate just fine
+* Connected to domain.com (1.2.3.4) port 443 (#0)
+* using HTTP/3
+* Using HTTP/3 Stream ID: 0 (easy handle 0x559094f83a20)
+> HEAD / HTTP/3
+> Host: domain.com
+> User-Agent: curl/8.1.1-DEV
+> Accept: */*
+> 
+* ngtcp2_conn_writev_stream returned error: ERR_DRAINING
+* ngtcp2_conn_writev_stream returned error: ERR_DRAINING
+* ngtcp2_conn_writev_stream returned error: ERR_DRAINING
+```
+
 # Cloudflare HTTP/3
 
 Cloudflare proxied HTTP/3 works though
@@ -132,4 +152,20 @@ time for request:    24.57ms     69.01ms     45.87ms     12.47ms    57.00%
 time for connect:     5.80ms     10.57ms      8.06ms      1.54ms    60.00%
 time to 1st byte:    30.37ms     51.93ms     40.75ms      6.46ms    70.00%
 req/s           :     128.77      217.41      143.65       26.25    90.00%
+```
+
+```
+curl --http3 -I https://domain.com/
+HTTP/3 200 
+date: Sat, 20 May 2023 07:34:37 GMT
+content-type: text/html; charset=utf-8
+last-modified: Sat, 20 May 2023 03:19:22 GMT
+vary: Accept-Encoding
+x-powered-by: centminmod
+alt-svc: h3=":443"; ma=86400, h3-29=":443"; ma=86400
+cf-cache-status: DYNAMIC
+report-to: {"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=p6BPUNU2mZDRoE69HEoyFNz%2BaUthDfYPckrVP1E76Wl7nr4O%2BLOjFvGV3E90jhcLe1%2BVcQXzfi516%2Fkn4Wo2qDHpvU0HH4b9JrqdVdDvJHnoTfizAJuu5ASuEbrbVvDsUw%3D%3D"}],"group":"cf-nel","max_age":604800}
+nel: {"success_fraction":0,"report_to":"cf-nel","max_age":604800}
+server: cloudflare
+cf-ray: 7ca2e5f1783603d9-DFW
 ```
