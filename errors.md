@@ -78,3 +78,58 @@ time for connect:     1.85ms      5.52ms      3.89ms      1.27ms    60.00%
 time to 1st byte:     6.07ms     14.02ms      9.15ms      2.82ms    70.00%
 req/s           :     657.92     1505.55     1061.14      302.46    60.00%
 ```
+
+Even running directly within container produces errors
+
+```
+docker run -it --name my-nghttp2 nghttp3 bash
+```
+```
+h2load --npn-list h3 -t1 -c10 -n100 -m32 https://domain.com/
+starting benchmark...
+spawning thread #0: 10 total client(s). 100 total requests
+TLS Protocol: TLSv1.3
+Cipher: TLS_AES_256_GCM_SHA384
+Server Temp Key: X25519 253 bits
+Application protocol: h3
+ngtcp2_conn_read_pkt: ERR_DRAINING
+ngtcp2_conn_read_pkt: ERR_DRAINING
+ngtcp2_conn_read_pkt: ERR_DRAINING
+ngtcp2_conn_read_pkt: ERR_DRAINING
+ngtcp2_conn_read_pkt: ERR_DRAINING
+```
+
+# Cloudflare HTTP/3
+
+Cloudflare proxied HTTP/3 works though
+
+```
+h2load --npn-list h3 -t1 -c10 -n100 -m32 https://domain.com/
+starting benchmark...
+spawning thread #0: 10 total client(s). 100 total requests
+TLS Protocol: TLSv1.3
+Cipher: TLS_AES_128_GCM_SHA256
+Server Temp Key: X25519 253 bits
+Application protocol: h3
+progress: 10% done
+progress: 20% done
+progress: 30% done
+progress: 40% done
+progress: 50% done
+progress: 60% done
+progress: 70% done
+progress: 80% done
+progress: 90% done
+progress: 100% done
+
+finished in 78.56ms, 1272.93 req/s, 8.31MB/s
+requests: 100 total, 100 started, 100 done, 100 succeeded, 0 failed, 0 errored, 0 timeout
+status codes: 100 2xx, 0 3xx, 0 4xx, 0 5xx
+traffic: 668.23KB (684264) total, 43.87KB (44927) headers (space savings 24.69%), 622.66KB (637600) data
+UDP datagram: 184 sent, 779 received
+                     min         max         mean         sd        +/- sd
+time for request:    24.57ms     69.01ms     45.87ms     12.47ms    57.00%
+time for connect:     5.80ms     10.57ms      8.06ms      1.54ms    60.00%
+time to 1st byte:    30.37ms     51.93ms     40.75ms      6.46ms    70.00%
+req/s           :     128.77      217.41      143.65       26.25    90.00%
+```
