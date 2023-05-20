@@ -26,6 +26,9 @@ RUN apt-get update && apt-get install -y \
     ruby-dev \
     bison \
     libelf-dev \
+    bsdmainutils \
+    dnsutils \
+    ldnsutils \
     git && \
     rm -rf /var/lib/apt/lists/*
 
@@ -76,4 +79,9 @@ RUN git clone https://github.com/curl/curl && \
     make -j$(nproc) && \
     make install
 
-ENV LD_LIBRARY_PATH=/usr/local/http3/nghttp2/lib/.libs:/usr/local/http3/curl/lib/.libs:${LD_LIBRARY_PATH}
+# testssl install
+RUN mkdir -p /opt && cd /opt && \
+    git clone --depth 1 https://github.com/drwetter/testssl.sh.git testssl && \
+    echo "alias testssl.sh='/opt/testssl/testssl.sh --openssl /usr/local/http3/openssl/build/bin/openssl --nodns=min --wide -p -c -f -E -S -P --quiet'" >> /etc/bash.bashrc
+
+ENV LD_LIBRARY_PATH=/opt/testssl:/usr/local/http3/openssl/build/lib:/usr/local/http3/nghttp2/lib/.libs:/usr/local/http3/curl/lib/.libs:${LD_LIBRARY_PATH}
