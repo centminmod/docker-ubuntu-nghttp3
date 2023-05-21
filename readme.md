@@ -40,10 +40,9 @@ server {
 }
 ```
 
-with dual RSA + ECDSA SSL certs
+with dual RSA + ECDSA SSL certs in `/usr/local/nginx/conf/ssl/domain.com/domain.com.crt.key.conf` include file:
 
 ```
-/usr/local/nginx/conf/ssl/domain.com/domain.com.crt.key.conf
   ssl_dhparam /usr/local/nginx/conf/ssl/domain.com/dhparam.pem;
   ssl_certificate      /usr/local/nginx/conf/ssl/domain.com/domain.com-acme.cer;
   ssl_certificate_key  /usr/local/nginx/conf/ssl/domain.com/domain.com-acme.key;
