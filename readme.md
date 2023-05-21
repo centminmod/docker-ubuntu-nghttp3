@@ -21,6 +21,50 @@ Protocols: dict file ftp ftps gopher gophers http https imap imaps mqtt pop3 pop
 Features: alt-svc AsynchDNS HSTS HTTP2 HTTP3 HTTPS-proxy IPv6 Largefile libz NTLM NTLM_WB SSL threadsafe TLS-SRP UnixSockets
 ```
 
+# Centmin Mod Nginx HTTP/3 QUIC 
+
+Centmin Mod LEMP stack Nginx HTTP/3 QUIC vhost setup with Nginx built with quicTLS (OpenSSL 1.1.1t) for `https://domain.com` on AlmaLinux 8.7 Linux server.
+
+```
+server {
+  listen 443 ssl http2;
+  listen 443 quic reuseport;
+  server_name domain.com www.domain.com;
+
+  include /usr/local/nginx/conf/ssl/domain.com/domain.com.crt.key.conf;
+...
+
+  location / {
+    add_header Alt-Svc 'h3=":443"; ma=86400';
+...
+}
+```
+
+with dual RSA + ECDSA SSL certs
+
+```
+/usr/local/nginx/conf/ssl/domain.com/domain.com.crt.key.conf
+  ssl_dhparam /usr/local/nginx/conf/ssl/domain.com/dhparam.pem;
+  ssl_certificate      /usr/local/nginx/conf/ssl/domain.com/domain.com-acme.cer;
+  ssl_certificate_key  /usr/local/nginx/conf/ssl/domain.com/domain.com-acme.key;
+
+  ssl_certificate      /usr/local/nginx/conf/ssl/domain.com/domain.com-acme-ecc.cer;
+  ssl_certificate_key  /usr/local/nginx/conf/ssl/domain.com/domain.com-acme-ecc.key;
+  
+  #ssl_trusted_certificate /usr/local/nginx/conf/ssl/domain.com/domain.com-acme.cer;
+  #ssl_trusted_certificate /usr/local/nginx/conf/ssl/domain.com/domain.com-acme-ecc.cer;
+  ssl_trusted_certificate /usr/local/nginx/conf/ssl/domain.com/domain.com-dualcert-rsa-ecc.cer;
+```
+
+```
+nginx -V
+nginx version: nginx/1.23.4 (190523-215109-almalinux8-a08d9ff)
+built by gcc 12.1.1 20220628 (Red Hat 12.1.1-3) (GCC) 
+built with OpenSSL 1.1.1t+quic  7 Feb 2023
+TLS SNI support enabled
+```
+> configure arguments: --with-ld-opt='-Wl,-E -L/opt/openssl-quic/lib -lssl -lcrypto -L/usr/local/zlib-cf/lib -L/usr/local/nginx-dep/lib -ljemalloc -Wl,-z,relro -Wl,-rpath,/opt/openssl-quic/lib:/usr/local/zlib-cf/lib:/usr/local/nginx-dep/lib -flto=12 -fuse-ld=gold' --with-cc-opt='-I/opt/openssl-quic/include -I/usr/local/zlib-cf/include -I/usr/local/nginx-dep/include -m64 -march=native -g -O3 -fstack-protector-strong -flto=12 -fuse-ld=gold --param=ssp-buffer-size=4 -Wformat -Werror=format-security -Wno-pointer-sign -fcode-hoisting -Wno-cast-function-type -Wno-format-extra-args -Wimplicit-fallthrough=0 -Wno-implicit-function-declaration -Wno-int-conversion -Wno-error=unused-result -Wno-unused-result -Wno-error=vla-parameter -Wp,-D_FORTIFY_SOURCE=2' --sbin-path=/usr/local/sbin/nginx --conf-path=/usr/local/nginx/conf/nginx.conf --build=190523-215109-almalinux8-a08d9ff --with-compat --without-pcre2 --with-http_stub_status_module --with-http_secure_link_module --with-libatomic --with-http_gzip_static_module --with-http_sub_module --with-http_addition_module --with-http_image_filter_module=dynamic --with-http_geoip_module --with-stream_geoip_module --with-stream_realip_module --with-stream_ssl_preread_module --with-threads --with-stream --with-stream_ssl_module --with-http_realip_module --add-dynamic-module=../ngx-fancyindex-0.4.2 --add-module=../ngx_cache_purge-2.5.1 --add-dynamic-module=../ngx_devel_kit-0.3.0 --add-dynamic-module=../set-misc-nginx-module-0.32 --add-dynamic-module=../echo-nginx-module-0.62 --add-module=../redis2-nginx-module-0.15 --add-module=../ngx_http_redis-0.4.0-cmm --add-module=../memc-nginx-module-0.19 --add-module=../srcache-nginx-module-0.32 --add-dynamic-module=../headers-more-nginx-module-0.34 --with-pcre-jit --with-zlib=../zlib-cloudflare-1.3.0 --with-http_ssl_module --with-http_v2_module --with-http_v3_module
+
 # curl HTTP/3 check
 
 ```
