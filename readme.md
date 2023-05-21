@@ -21,6 +21,87 @@ Protocols: dict file ftp ftps gopher gophers http https imap imaps mqtt pop3 pop
 Features: alt-svc AsynchDNS HSTS HTTP2 HTTP3 HTTPS-proxy IPv6 Largefile libz NTLM NTLM_WB SSL threadsafe TLS-SRP UnixSockets
 ```
 
+# curl HTTP/3 check
+
+```
+curl -Iv --http3 https://domain.com
+*   Trying 1.2.3.4:443...
+*  CAfile: /etc/ssl/certs/ca-certificates.crt
+*  CApath: none
+*  subjectAltName: host "domain.com" matched cert's "domain.com"
+* Verified certificate just fine
+* Connected to domain.com (1.2.3.4) port 443 (#0)
+* using HTTP/3
+* Using HTTP/3 Stream ID: 0 (easy handle 0x5565d44aaa20)
+> HEAD / HTTP/3
+> Host: domain.com
+> User-Agent: curl/8.1.1-DEV
+> Accept: */*
+> 
+< HTTP/3 200 
+HTTP/3 200 
+< date: Sun, 21 May 2023 03:28:10 GMT
+date: Sun, 21 May 2023 03:28:10 GMT
+< content-type: text/html; charset=utf-8
+content-type: text/html; charset=utf-8
+< content-length: 6416
+content-length: 6416
+< last-modified: Sat, 20 May 2023 21:18:27 GMT
+last-modified: Sat, 20 May 2023 21:18:27 GMT
+< vary: accept-encoding
+vary: accept-encoding
+< etag: "64693923-1910"
+etag: "64693923-1910"
+< server: nginx centminmod
+server: nginx centminmod
+< x-powered-by: centminmod
+x-powered-by: centminmod
+< alt-svc: h3=":443"; ma=86400
+alt-svc: h3=":443"; ma=86400
+< x-protocol: HTTP/3.0
+x-protocol: HTTP/3.0
+< accept-ranges: bytes
+accept-ranges: bytes
+
+< 
+* Connection #0 to host domain.com left intact
+```
+
+# h2load HTTP/3 tests
+
+```
+h2load --npn-list h3 -t1 -c10 -n100 -m32 https://domain.com
+starting benchmark...
+spawning thread #0: 10 total client(s). 100 total requests
+TLS Protocol: TLSv1.3
+Cipher: TLS_AES_256_GCM_SHA384
+Server Temp Key: X25519 253 bits
+Application protocol: h3
+progress: 10% done
+progress: 20% done
+progress: 30% done
+progress: 40% done
+progress: 50% done
+progress: 60% done
+progress: 70% done
+progress: 80% done
+progress: 90% done
+progress: 100% done
+
+finished in 10.12ms, 9881.42 req/s, 62.32MB/s
+requests: 100 total, 100 started, 100 done, 100 succeeded, 0 failed, 0 errored, 0 timeout
+status codes: 100 2xx, 0 3xx, 0 4xx, 0 5xx
+traffic: 645.79KB (661290) total, 18.55KB (19000) headers (space savings 32.86%), 626.56KB (641600) data
+UDP datagram: 57 sent, 600 received
+                     min         max         mean         sd        +/- sd
+time for request:     3.23ms      5.03ms      3.81ms       582us    63.00%
+time for connect:     2.28ms      5.33ms      4.06ms      1.01ms    70.00%
+time to 1st byte:     5.85ms      8.95ms      7.52ms      1.02ms    70.00%
+req/s           :    1064.30     1463.68     1175.90      123.80    90.00%
+```
+
+# Help Files
+
 ```
 docker run --rm -it nghttp3 h2load --help
 Usage: h2load [OPTIONS]... [URI]...
